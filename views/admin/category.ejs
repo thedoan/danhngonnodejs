@@ -1,0 +1,186 @@
+<!doctype html>
+<html>
+	<head>
+		<% include ../headerStuff %>
+	</head>
+	<body>
+		<% include ../pageHeader %>
+		<div class="container">
+
+			<div class="card">
+				<div class="card-header alert-info">
+					<h2><span class="fa fa-tags">&nbsp; </span>Danh sách chủ đề</h2>
+				</div>
+				<div class="card-body">
+					<table class="table table-sm table-hover">
+						<thead class="thead-default">
+							<tr>
+								<th>ID</th>
+								<th>Name</th>
+								<th>Tag</th>
+								<th>Action <a data-toggle="modal" data-target="#modalAddNew" href="#"><span class="fa text-success fa-plus color-success float-right mr-3"></span></a></th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<th scope="row">1</th>
+								<td>Mark</td>
+								<td>mark@email.com</td>
+								<td>
+									<a class="m-2" data-toggle="modal" data-target="#modalEdit" href="#"><span class="fa fa-edit"></span></a>
+									<a data-toggle="modal" data-target="#modalDelete" href="#"><span class="fa text-danger fa-trash-o"></span></a>
+								</td>
+							</tr>
+							<tr>
+								<th scope="row">2</th>
+								<td>Jacob</td>
+								<td>thornton@email.com</td>
+								<td>
+									<a class="m-2" data-toggle="modal" data-target="#modalEdit" href="#"><span class="fa fa-edit"></span></a>
+									<a data-toggle="modal" data-target="#modalDelete" href="#"><span class="fa text-danger fa-trash-o"></span></a></td>
+							</tr>
+							<tr>
+								<th scope="row">3</th>
+								<td>Larry</td>
+								<td>thebird@email.com</td>
+								<td>
+									<a class="m-2" data-toggle="modal" data-target="#modalEdit" href="#"><span class="fa fa-edit"></span></a>
+									<a data-toggle="modal" data-target="#modalDelete" href="#"><span class="fa text-danger fa-trash-o"></span></a></td>
+							</tr>
+						</tbody>
+					</table>  
+				</div>
+			</div>
+			<div class="modal fade" id="modalAddNew" tabindex="-1" role="dialog" aria-labelledby="addNewModalLabel" aria-hidden="true">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="addNewModalLabel"><span class="fa fa-tag"></span>&nbsp;Thêm mới chủ đề</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						<div class="modal-body">
+							<form action="" method="POST">
+								<div class="form-group row">
+									<div class="col-md-3 col-sm-0"></div>
+									<div class="alert alert-danger col-md-6 col-sm-12">Thông báo lỗi</div>
+								</div>
+								<div class="form-group row">
+									<label class="col-md-3 col-sm-0" for="name">Tên chủ đề:</label>
+									<input class="col-md-6 col-sm-12" type="text" name="name" required placeholder="Nhập chủ đề" oninvalid="this.setCustomValidity('Nhập tên chủ đề')"oninput="setCustomValidity('')" >
+								</div>
+								<div class="form-group row">
+									<label class="col-md-3 col-sm-0" for="tag">Tag:</label>
+									<input class="col-md-6 col-sm-12" type="text" name="tag" onfocus="tagProcess()">
+								</div>
+								<div class="form-group row">
+									<div class="col-md-3 col-sm-0"></div>
+									<div class="col-md-6 col-sm-12">
+										<button class = "btn btn-danger" type="button" data-dismiss="modal">Hủy</button>
+										<button class="btn ml-5 btn-success" type="submit"><span class="fa fa-tag"></span>&nbsp;Tạo</button>
+									</div>
+								</div>
+							</form>
+
+						</div>
+						<!--
+		  <div class="modal-footer">
+		  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+		  <button type="button" class="btn btn-primary">Save changes</button>
+		  </div>
+						-->
+					</div>
+				</div>
+			</div>
+			<div class="modal fade" id="modalEdit" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="editModalLabel"><span class="fa fa-tag"></span>&nbsp;chỉnh sửa  chủ đề</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						<div class="modal-body">
+							<form action="" method="POST">
+								<div class="form-group row">
+									<div class="col-md-3 col-sm-0"></div>
+									<div class="alert alert-danger col-md-6 col-sm-12">Thông báo lỗi</div>
+								</div>
+								<div class="form-group row">
+									<label class="col-md-3 col-sm-0" for="name">Tên chủ đề:</label>
+									<input class="col-md-6 col-sm-12" type="text" name="name">
+								</div>
+								<div class="form-group row">
+									<label class="col-md-3 col-sm-0" for="tag">Tag:</label>
+									<input class="col-md-6 col-sm-12" type="text" name="tag">
+								</div>
+								<div class="form-group row">
+									<div class="col-md-3 col-sm-0"></div>
+									<div class="col-md-6 col-sm-12">
+										<button class = "btn btn-danger" type="button" data-dismiss="modal">Hủy</button>
+										<button class="btn ml-5 btn-success" type="submit"><span class="fa fa-tag"></span>&nbsp;Sửa</button>
+									</div>
+								</div>
+							</form>
+
+						</div>
+						<!--
+		  <div class="modal-footer">
+		  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+		  <button type="button" class="btn btn-primary">Save changes</button>
+		  </div>
+						-->
+					</div>
+				</div>
+			</div>
+			<div class="modal fade" id="modalDelete" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="deleteModalLabel"><span class="fa fa-tag"></span>&nbsp;Xóa chủ đề</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						<div class="modal-body">
+							<form action="/admin/category" name="formNewCategory" method="POST">
+								<div class="form-group row">
+									<div class="col-md-3 col-sm-0"></div>
+									<div class="alert alert-danger col-md-6 col-sm-12">Thông báo lỗi</div>
+								</div>
+								<div class="form-group row">
+									<label class="col-md-3 col-sm-0" for="name">Tên chủ đề:</label>
+									<input class="col-md-6 col-sm-12" type="text" name="name">
+								</div>
+								<div class="form-group row">
+									<label class="col-md-3 col-sm-0" for="tag">Tag:</label>
+									<input class="col-md-6 col-sm-12" type="text" name="tag">
+								</div>
+								<div class="form-group row">
+									<div class="col-md-3 col-sm-0"></div>
+									<div class="col-md-6 col-sm-12">
+										<button class = "btn btn-danger" type="button" data-dismiss="modal">Hủy</button>
+										<button class="btn ml-5 btn-success" type="submit"><span class="fa fa-tag"></span>&nbsp;Xóa</button>
+									</div>
+								</div>
+							</form>
+
+						</div>
+						<!--
+		  <div class="modal-footer">
+		  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+		  <button type="button" class="btn btn-primary">Save changes</button>
+		  </div>
+						-->
+					</div>
+				</div>
+			</div>
+		</div>
+		<% include ../pageFooter %>
+		<% include ../footerStuff %>
+		<script>
+		</script>
+	</body>
+</html>
