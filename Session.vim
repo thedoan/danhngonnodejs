@@ -25,6 +25,7 @@ badd +0 views/admin/category.ejs
 badd +0 views/index.ejs
 badd +0 views/quote_by_cat.ejs
 badd +0 views/login.ejs
+badd +0 .gitignore
 argglobal
 silent! argdel *
 set stal=2
@@ -226,7 +227,7 @@ exe s:l
 normal! zt
 16
 normal! 025|
-tabnext 5
+tabnext 6
 set stal=1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
