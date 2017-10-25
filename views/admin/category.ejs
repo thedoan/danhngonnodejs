@@ -72,7 +72,7 @@
 								</div>
 								<div class="form-group row">
 									<label class="col-md-3 col-sm-0" for="tag">Tag:</label>
-									<input class="col-md-6 col-sm-12" type="text" name="tag" onfocus="tagProcess()">
+									<input class="col-md-6 col-sm-12" type="text" name="tag">
 								</div>
 								<div class="form-group row">
 									<div class="col-md-3 col-sm-0"></div>
@@ -145,18 +145,18 @@
 							</button>
 						</div>
 						<div class="modal-body">
-							<form action="/admin/category" name="formNewCategory" method="POST">
+							<form action="/admin/category" id="formNewCategory" name="formNewCategory" method="POST">
 								<div class="form-group row">
 									<div class="col-md-3 col-sm-0"></div>
 									<div class="alert alert-danger col-md-6 col-sm-12">Thông báo lỗi</div>
 								</div>
 								<div class="form-group row">
 									<label class="col-md-3 col-sm-0" for="name">Tên chủ đề:</label>
-									<input class="col-md-6 col-sm-12" type="text" name="name">
+									<input class="col-md-6 col-sm-12" id="newname" type="text" name="name">
 								</div>
 								<div class="form-group row">
 									<label class="col-md-3 col-sm-0" for="tag">Tag:</label>
-									<input class="col-md-6 col-sm-12" type="text" name="tag">
+									<input class="col-md-6 col-sm-12" id="newtag" type="text" name="tag">
 								</div>
 								<div class="form-group row">
 									<div class="col-md-3 col-sm-0"></div>
@@ -181,6 +181,18 @@
 		<% include ../pageFooter %>
 		<% include ../footerStuff %>
 		<script>
+			$(document).ready(function(){
+				alert("get ready");
+				//your code here
+				$('#newname').blur(function(){
+					//ajax check category
+					//
+					alert("you leave me");
+				});
+				$("#newtag").focus(function(){
+					alert("get forcus");
+				});
+			});
 		</script>
 	</body>
 </html>
