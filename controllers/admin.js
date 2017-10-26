@@ -1,3 +1,4 @@
+var Category = require("../models/Category");
 module.exports = {
 	index: function(req, res){
 		if(req.user && req.user.role == "admin"){
@@ -17,9 +18,35 @@ module.exports = {
 		res.render("../views/admin/category",{user: req.user});
 	},
 	createCategory: function(req, res){
-		
+		let name = req.body.name;
+		let tag = req.body.tag;
+		console.log("name:"+name+", tag:"+tag);
+		let category = new Category({
+			name:name,
+			tag:tag
+		});
+		category.save(function(err, resultcategory){
+			if(err) {
+				res.send("err");
+			}else{
+				res.send("ok");
+			}
+		});
 	},
 	checkCategory: function(req, res){
-		
+		let category = req.params.category;
+		 console.log("check category:"+category);
+		Category.find({name: category})
+			.exec(function(err, resultCategory){
+				if(err) {
+					res.send("err");
+				}else{
+					if(Object.keys(resultCategory).length > 0){
+						res.send("exist");
+					}else{
+						res.send("ok");
+					}
+				}
+			});			
 	}
 }	

@@ -1,4 +1,4 @@
 <script src="/jquery/jquery.min.js"></script>
 <script src="/popper/popper.js"></script>
 <script src="/bootstrap/js/bootstrap.min.js"></script>
-<script src="/khongdau/khongdau.js"></script>
+<script src="/khongdau.js"></script>

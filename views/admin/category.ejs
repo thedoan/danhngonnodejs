@@ -61,26 +61,26 @@
 							</button>
 						</div>
 						<div class="modal-body">
-							<form action="" method="POST">
+							<form action="/admin/category" id="formNewCategory" method="POST">
 								<div class="form-group row">
 									<div class="col-md-3 col-sm-0"></div>
-									<div class="alert alert-danger col-md-6 col-sm-12">Thông báo lỗi</div>
+									<div class="alert alert-danger col-md-6 col-sm-12" id="newCategoryInfo"></div>
 								</div>
 								<div class="form-group row">
 									<label class="col-md-3 col-sm-0" for="name">Tên chủ đề:</label>
-									<input class="col-md-6 col-sm-12" type="text" name="name" required placeholder="Nhập chủ đề" oninvalid="this.setCustomValidity('Nhập tên chủ đề')"oninput="setCustomValidity('')" >
+									<input class="col-md-6 col-sm-12" type="text" name="name" required="" title="Hãy nhập chủ đề" placeholder="Nhập chủ đề" oninvalid="this.setCustomValidity('Nhập tên chủ đề')" oninput="setCustomValidity('')" >
 								</div>
-								<div class="form-group row">
-									<label class="col-md-3 col-sm-0" for="tag">Tag:</label>
-									<input class="col-md-6 col-sm-12" type="text" name="tag">
-								</div>
-								<div class="form-group row">
-									<div class="col-md-3 col-sm-0"></div>
-									<div class="col-md-6 col-sm-12">
-										<button class = "btn btn-danger" type="button" data-dismiss="modal">Hủy</button>
-										<button class="btn ml-5 btn-success" type="submit"><span class="fa fa-tag"></span>&nbsp;Tạo</button>
+									<div class="form-group row">
+										<label class="col-md-3 col-sm-0" for="tag">Tag:</label>
+										<input class="col-md-6 col-sm-12" type="text" name="tag">
 									</div>
-								</div>
+									<div class="form-group row">
+										<div class="col-md-3 col-sm-0"></div>
+										<div class="col-md-6 col-sm-12">
+											<button class = "btn btn-danger" type="button" data-dismiss="modal">Hủy</button>
+											<button class="btn ml-5 btn-success" type="submit"><span class="fa fa-tag"></span>&nbsp;Tạo</button>
+										</div>
+									</div>
 							</form>
 
 						</div>
@@ -103,7 +103,7 @@
 							</button>
 						</div>
 						<div class="modal-body">
-							<form action="" method="POST">
+							<form action="/admin/category" id="formEditCategory" method="POST">
 								<div class="form-group row">
 									<div class="col-md-3 col-sm-0"></div>
 									<div class="alert alert-danger col-md-6 col-sm-12">Thông báo lỗi</div>
@@ -145,18 +145,18 @@
 							</button>
 						</div>
 						<div class="modal-body">
-							<form action="/admin/category" id="formNewCategory" name="formNewCategory" method="POST">
+							<form action="/admin/category" id="formDeleteCategory" name="formNewCategory" method="POST">
 								<div class="form-group row">
 									<div class="col-md-3 col-sm-0"></div>
 									<div class="alert alert-danger col-md-6 col-sm-12">Thông báo lỗi</div>
 								</div>
 								<div class="form-group row">
-									<label class="col-md-3 col-sm-0" for="name">Tên chủ đề:</label>
-									<input class="col-md-6 col-sm-12" id="newname" type="text" name="name">
+									<label class="col-md-3 col-sm-0" for="newname">Tên chủ đề:</label>
+									<input class="col-md-6 col-sm-12" type="text" name="name">
 								</div>
 								<div class="form-group row">
 									<label class="col-md-3 col-sm-0" for="tag">Tag:</label>
-									<input class="col-md-6 col-sm-12" id="newtag" type="text" name="tag">
+									<input class="col-md-6 col-sm-12" type="text" name="tag">
 								</div>
 								<div class="form-group row">
 									<div class="col-md-3 col-sm-0"></div>
@@ -181,18 +181,93 @@
 		<% include ../pageFooter %>
 		<% include ../footerStuff %>
 		<script>
-			$(document).ready(function(){
-				alert("get ready");
-				//your code here
-				$('#newname').blur(function(){
-					//ajax check category
-					//
-					alert("you leave me");
-				});
-				$("#newtag").focus(function(){
-					alert("get forcus");
-				});
-			});
+$(document).ready(function(){
+	var inputName = $('#formNewCategory :input[name="name"]'); 
+	var inputTag = $('#formNewCategory :input[name="tag"]'); 
+	var txtInfo = $('#newCategoryInfo');
+	txtInfo.hide();
+	//Handler new category modal when show
+	$('#modalAddNew').on('shown.bs.modal', function () {
+		inputName.focus();
+	})
+
+	//Handler new category modal when hide 
+	$('#modalAddNew').on('hidden.bs.modal', function () {
+		txtInfo.hide();
+		inputName.val('');
+		inputTag.val('');
+	})
+	inputName.focus(function(){
+		txtInfo.hide();
+	});
+	inputTag.focus(function(){
+		txtInfo.hide();
+	});
+	/*
+	inputName.change(function(){
+		txtInfo.text('');
+		txtInfo.hide();
+	});
+	inputTag.change(function(){
+		txtInfo.text('');
+		txtInfo.hide();
+	});
+	*/
+	inputName.blur(function(){
+		if($(this).val().length > 3){
+			let tag = KhongDau(inputName.val(),["chuyen","url"]);
+			inputTag.val(tag);
+		}
+	});
+
+	//process submit form add new category here
+	$('#formNewCategory').submit(function(event){
+		let okSubmit = true;
+		//process submit form here	
+		//again validate form
+		if(inputName.val().length < 3){
+			txtInfo.text("Tên chủ đề phải > 3 ký tự");
+			txtInfo.show();
+			okSubmit = false;
+		}
+		if(inputTag.val().lenth <= 0){
+			txtInfo.text("Tag phải > 3 ký tự");		
+			txtInfo.show();
+			okSubmit = false;
+		}
+		$.get(encodeURI("/admin/checkcategory/"+inputName.val()),function(data){
+			//alert(data);
+			if(data=="exist"){
+				//alert("Thông báo lỗi");
+				txtInfo.text("Đã có chủ đề này");
+				txtInfo.show();
+				okSubmit = false;
+			}else if(data == "error"){
+				//co loi xay ra thu lai sau
+				txtInfo.text("Có lỗi xảy ra. Thử lại");
+				txtInfo.show();
+				okSubmit = false;	
+			}else if(data == "ok"){
+				if(okSubmit){
+					//ajax submit here
+					$.post('/admin/category',{name: inputName.val(), tag: inputTag.val()}, function(data){
+						alert("submit result:"+data);
+						if(data=="ok"){
+							txtInfo.removeClass("alert-danger").addClass("alert-success");
+							txtInfo.text("Tạo thành công !");
+							txtInfo.show();
+						}else{
+							txtInfo.text("Có lỗi xảy ra. Thử lại");
+							txtInfo.show();
+						}
+					});
+				}
+
+			}
+		});
+		event.preventDefault();
+	});
+});
 		</script>
 	</body>
 </html>
