@@ -18,53 +18,45 @@
 								<th>ID</th>
 								<th>Name</th>
 								<th>Tag</th>
-								<th>Action <a data-toggle="modal" data-target="#modalAddNew" href="#"><span class="fa text-success fa-plus color-success float-right mr-3"></span></a></th>
+								<th>Action <a data-toggle="modal" data-action="new" data-target="#categoryModal" href="#"><span class="fa text-success fa-plus color-success float-right mr-3"></span></a></th>
 							</tr>
 						</thead>
 						<tbody>
-							<tr>
-								<th scope="row">1</th>
-								<td>Mark</td>
-								<td>mark@email.com</td>
-								<td>
-									<a class="m-2" data-toggle="modal" data-target="#modalEdit" href="#"><span class="fa fa-edit"></span></a>
-									<a data-toggle="modal" data-target="#modalDelete" href="#"><span class="fa text-danger fa-trash-o"></span></a>
-								</td>
-							</tr>
-							<tr>
-								<th scope="row">2</th>
-								<td>Jacob</td>
-								<td>thornton@email.com</td>
-								<td>
-									<a class="m-2" data-toggle="modal" data-target="#modalEdit" href="#"><span class="fa fa-edit"></span></a>
-									<a data-toggle="modal" data-target="#modalDelete" href="#"><span class="fa text-danger fa-trash-o"></span></a></td>
-							</tr>
-							<tr>
-								<th scope="row">3</th>
-								<td>Larry</td>
-								<td>thebird@email.com</td>
-								<td>
-									<a class="m-2" data-toggle="modal" data-target="#modalEdit" href="#"><span class="fa fa-edit"></span></a>
-									<a data-toggle="modal" data-target="#modalDelete" href="#"><span class="fa text-danger fa-trash-o"></span></a></td>
-							</tr>
+							<%
+																										if(categories){
+																										categories.forEach(function(category){
+																										%>
+																										<tr>
+																											<th scope="row"><%= category._id %></th>
+																											<td><%= category.name %></td>
+																											<td><%= category.tag %></td>
+																											<td>
+																												<a class="m-2" data-toggle="modal" data-action="edit" data-id="<%= category._id %>" data-name="<%= category.name %>" data-tag="<%= category.tag %>" data-target="#categoryModal" href="#"><span class="fa fa-edit"></span></a>
+																												<a data-toggle="modal" data-action="delete" data-id="<%= category._id %>" data-name="<%= category.name %>" data-tag="<%= category.tag %>" data-target="#categoryModal" href="#"><span class="fa text-danger fa-trash-o"></span></a>
+																											</td>
+																										</tr>
+																										<%
+																																																				  });															
+																																																				  }
+																																																				  %>
 						</tbody>
 					</table>  
 				</div>
 			</div>
-			<div class="modal fade" id="modalAddNew" tabindex="-1" role="dialog" aria-labelledby="addNewModalLabel" aria-hidden="true">
+			<div class="modal fade" id="categoryModal" tabindex="-1" role="dialog" aria-labelledby="addNewModalLabel" aria-hidden="true">
 				<div class="modal-dialog" role="document">
 					<div class="modal-content">
 						<div class="modal-header">
-							<h5 class="modal-title" id="addNewModalLabel"><span class="fa fa-tag"></span>&nbsp;Thêm mới chủ đề</h5>
+							<h5 class="modal-title" id="addNewModalLabel"></h5>
 							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 								<span aria-hidden="true">&times;</span>
 							</button>
 						</div>
 						<div class="modal-body">
-							<form action="/admin/category" id="formNewCategory" method="POST">
+							<form action="/admin/category" id="categoryForm" method="POST">
 								<div class="form-group row">
 									<div class="col-md-3 col-sm-0"></div>
-									<div class="alert alert-danger col-md-6 col-sm-12" id="newCategoryInfo"></div>
+									<div class="alert alert-danger col-md-6 col-sm-12" id="categoryInfo"></div>
 								</div>
 								<div class="form-group row">
 									<label class="col-md-3 col-sm-0" for="name">Tên chủ đề:</label>
@@ -72,7 +64,7 @@
 								</div>
 									<div class="form-group row">
 										<label class="col-md-3 col-sm-0" for="tag">Tag:</label>
-										<input class="col-md-6 col-sm-12" type="text" name="tag">
+										<input class="col-md-6 col-sm-12" type="text" name="tag" required="" title="Hãy nhập tag" placeholder="Nhập tag" oninvalid="this.setCustomValidity('Nhập tag chủ đề')" oninput="setCustomValidity('')">
 									</div>
 									<div class="form-group row">
 										<div class="col-md-3 col-sm-0"></div>
@@ -93,181 +85,189 @@
 					</div>
 				</div>
 			</div>
-			<div class="modal fade" id="modalEdit" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
-				<div class="modal-dialog" role="document">
-					<div class="modal-content">
-						<div class="modal-header">
-							<h5 class="modal-title" id="editModalLabel"><span class="fa fa-tag"></span>&nbsp;chỉnh sửa  chủ đề</h5>
-							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-								<span aria-hidden="true">&times;</span>
-							</button>
-						</div>
-						<div class="modal-body">
-							<form action="/admin/category" id="formEditCategory" method="POST">
-								<div class="form-group row">
-									<div class="col-md-3 col-sm-0"></div>
-									<div class="alert alert-danger col-md-6 col-sm-12">Thông báo lỗi</div>
-								</div>
-								<div class="form-group row">
-									<label class="col-md-3 col-sm-0" for="name">Tên chủ đề:</label>
-									<input class="col-md-6 col-sm-12" type="text" name="name">
-								</div>
-								<div class="form-group row">
-									<label class="col-md-3 col-sm-0" for="tag">Tag:</label>
-									<input class="col-md-6 col-sm-12" type="text" name="tag">
-								</div>
-								<div class="form-group row">
-									<div class="col-md-3 col-sm-0"></div>
-									<div class="col-md-6 col-sm-12">
-										<button class = "btn btn-danger" type="button" data-dismiss="modal">Hủy</button>
-										<button class="btn ml-5 btn-success" type="submit"><span class="fa fa-tag"></span>&nbsp;Sửa</button>
-									</div>
-								</div>
-							</form>
-
-						</div>
-						<!--
-		  <div class="modal-footer">
-		  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-		  <button type="button" class="btn btn-primary">Save changes</button>
-		  </div>
-						-->
-					</div>
-				</div>
-			</div>
-			<div class="modal fade" id="modalDelete" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
-				<div class="modal-dialog" role="document">
-					<div class="modal-content">
-						<div class="modal-header">
-							<h5 class="modal-title" id="deleteModalLabel"><span class="fa fa-tag"></span>&nbsp;Xóa chủ đề</h5>
-							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-								<span aria-hidden="true">&times;</span>
-							</button>
-						</div>
-						<div class="modal-body">
-							<form action="/admin/category" id="formDeleteCategory" name="formNewCategory" method="POST">
-								<div class="form-group row">
-									<div class="col-md-3 col-sm-0"></div>
-									<div class="alert alert-danger col-md-6 col-sm-12">Thông báo lỗi</div>
-								</div>
-								<div class="form-group row">
-									<label class="col-md-3 col-sm-0" for="newname">Tên chủ đề:</label>
-									<input class="col-md-6 col-sm-12" type="text" name="name">
-								</div>
-								<div class="form-group row">
-									<label class="col-md-3 col-sm-0" for="tag">Tag:</label>
-									<input class="col-md-6 col-sm-12" type="text" name="tag">
-								</div>
-								<div class="form-group row">
-									<div class="col-md-3 col-sm-0"></div>
-									<div class="col-md-6 col-sm-12">
-										<button class = "btn btn-danger" type="button" data-dismiss="modal">Hủy</button>
-										<button class="btn ml-5 btn-success" type="submit"><span class="fa fa-tag"></span>&nbsp;Xóa</button>
-									</div>
-								</div>
-							</form>
-
-						</div>
-						<!--
-		  <div class="modal-footer">
-		  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-		  <button type="button" class="btn btn-primary">Save changes</button>
-		  </div>
-						-->
-					</div>
-				</div>
-			</div>
 		</div>
 		<% include ../pageFooter %>
 		<% include ../footerStuff %>
 		<script>
 $(document).ready(function(){
-	var inputName = $('#formNewCategory :input[name="name"]'); 
-	var inputTag = $('#formNewCategory :input[name="tag"]'); 
-	var txtInfo = $('#newCategoryInfo');
-	txtInfo.hide();
-	//Handler new category modal when show
-	$('#modalAddNew').on('shown.bs.modal', function () {
-		inputName.focus();
-	})
-
-	//Handler new category modal when hide 
-	$('#modalAddNew').on('hidden.bs.modal', function () {
-		txtInfo.text("");
-		txtInfo.hide();
+	//process modal add new category
+	var inputName = $('#categoryForm :input[name="name"]'); 
+	var inputTag = $('#categoryForm :input[name="tag"]'); 
+	var categoryInfo = $('#categoryInfo');
+	categoryInfo.hide();
+	$('#categoryModal').on('show.bs.modal', function(event){
+		var button = $(event.relatedTarget);
+		var recipient = button.data('action');//new, edit, delete
+		var title='<span class="fa fa-tag"></span>&nbsp;';
+		//alert("action:"+recipient);
+		var modal = $(this);
+		var btnSubmit = modal.find('button[type=submit]'); 
+		var inputName = modal.find('input[name=name]');
+		var inputTag = modal.find('input[name=tag]');
+		var categoryID;
+		var categoryInfo = modal.find('div.alert');
+		var formModal = modal.find('form'); 
+			if(categoryInfo.hasClass("alert-success")){
+			categoryInfo.removeClass("alert-success");
+		}
+		if(!categoryInfo.hasClass("alert-danger")){
+			categoryInfo.addClass("alert-danger");
+		}
+		categoryInfo.hide();
 		inputName.val('');
 		inputTag.val('');
-	})
-	inputName.focus(function(){
-		txtInfo.hide();
-	});
-	inputTag.focus(function(){
-		txtInfo.hide();
-	});
-	/*
-	inputName.change(function(){
-		txtInfo.text('');
-		txtInfo.hide();
-	});
-	inputTag.change(function(){
-		txtInfo.text('');
-		txtInfo.hide();
-	});
-	*/
-	inputName.blur(function(){
-		if($(this).val().length > 3){
-			let tag = KhongDau(inputName.val(),["chuyen","url"]);
-			inputTag.val(tag);
-		}
-	});
+		inputName.prop('disabled', false);
+		inputTag.prop('disabled', false);
+		/*
+		   inputName.keyup(function(event){
+		   categoryInfo.hide();
+		   });
+		   inputTag.keyup(function(event){
+		   categoryInfo.hide();
+		   });
+		 */
+		if(recipient=="new"){
+			title = title+"Thêm mới chủ đề";
+			btnSubmit.text("Thêm");
+			inputName.blur(function(){
+				if($(this).val().length > 3){
+					let tag = KhongDau(inputName.val(),["chuyen","url"]);
+					inputTag.val(tag);
+				}
+			});
 
-	//process submit form add new category here
-	$('#formNewCategory').submit(function(event){
-		let okSubmit = true;
-		//process submit form here	
-		//again validate form
-		if(inputName.val().length < 3){
-			txtInfo.text("Tên chủ đề phải > 3 ký tự");
-			txtInfo.show();
-			okSubmit = false;
+		}else if(recipient=="edit"){
+			title = title+"Sửa chủ đề";
+			btnSubmit.text("Sửa");
+		}else if(recipient=="delete"){
+			title = title+"Xóa chủ đề ?";
+			btnSubmit.text("Xóa");
+			inputName.prop('disabled', true);
+			inputTag.prop('disabled', true);
 		}
-		if(inputTag.val().lenth <= 0){
-			txtInfo.text("Tag phải > 3 ký tự");		
-			txtInfo.show();
-			okSubmit = false;
+
+		if(recipient=="edit" || recipient =="delete"){
+			inputName.val(button.data('name'));
+			inputTag.val(button.data('tag'));	
+			categoryID = button.data('id');
+			$('table tbody tr').removeClass("border").removeClass("border-warning");
+			//border tr you click
+			button.parent().parent().addClass("border-warning").addClass("border");
+
 		}
-		$.get(encodeURI("/admin/checkcategory/"+inputName.val()),function(data){
-			//alert(data);
-			if(data=="exist"){
-				//alert("Thông báo lỗi");
-				txtInfo.text("Đã có chủ đề này");
-				txtInfo.show();
-				okSubmit = false;
-			}else if(data == "error"){
-				//co loi xay ra thu lai sau
-				txtInfo.text("Có lỗi xảy ra. Thử lại");
-				txtInfo.show();
-				okSubmit = false;	
-			}else if(data == "ok"){
-				if(okSubmit){
-					//ajax submit here
-					$.post('/admin/category',{name: inputName.val(), tag: inputTag.val()}, function(data){
-						alert("submit result:"+data);
-						if(data=="ok"){
-							txtInfo.removeClass("alert-danger").addClass("alert-success");
-							txtInfo.text("Tạo thành công !");
-							txtInfo.show();
-						}else{
-							txtInfo.text("Có lỗi xảy ra. Thử lại");
-							txtInfo.show();
+		modal.find('.modal-title').html(title);
+		formModal.submit(function(event){
+			if(categoryInfo.hasClass("alert-success")){
+				categoryInfo.removeClass("alert-success");
+			}
+			if(!categoryInfo.hasClass("alert-danger")){
+				categoryInfo.addClass("alert-danger");
+			}
+
+			if(recipient=="new" || recipient=="edit"){
+				let okSubmit = true;
+				if(inputName.val().length <= 3){
+					categoryInfo.text("Tên chủ đề phải > 3 ký tự");
+					categoryInfo.show();
+					okSubmit = false;
+				}
+				if(inputTag.val().lenth <= 3){
+					categoryInfo.text("Tag phải > 3 ký tự");		
+					categoryInfo.show();
+					okSubmit = false;
+				}
+				if(recipient=="new"){
+					$.get(encodeURI("/admin/checkcategory/"+inputName.val()),function(data){
+						//alert(data);
+						if(data=="exist"){
+							//alert("Thông báo lỗi");
+							categoryInfo.text("Đã có chủ đề này");
+							categoryInfo.show();
+							okSubmit = false;
+						}else if(data == "error"){
+							//co loi xay ra thu lai sau
+							categoryInfo.text("Có lỗi xảy ra. Thử lại");
+							categoryInfo.show();
+							okSubmit = false;	
+						}else if(data == "ok"){
+							if(okSubmit){
+								//ajax submit here
+								$.post('/admin/category',{name: inputName.val(), tag: inputTag.val()}, function(data){
+									alert("submit result:"+data);
+									if(data!=="err"){
+										categoryInfo.removeClass("alert-danger").addClass("alert-success");
+										categoryInfo.text("Tạo thành công !");
+										categoryInfo.show();
+										let resultCategory = JSON.parse(data);
+										//console.log(resultCategory.name+" "+resultCategory.tag);
+										//add to table
+										let newtr = `<tr class="border border-warning"><th>${resultCategory._id}</th><td>${resultCategory.name}</td><td>${resultCategory.tag}</td><td>											<a class="m-2" data-toggle="modal" data-action="edit" data-id="${resultCategory._id}" data-name="${resultCategory.name}" data-tag="${resultCategory.tag}" data-target="#categoryModal" href="#"><span class="fa fa-edit"></span></a><a data-toggle="modal" data-action="delete" data-id="${resultCategory._id}" data-name="${resultCategory.name}" data-tag="${resultCategory.tag}" data-target="#categoryModal" href="#"><span class="fa text-danger fa-trash-o"></span></a>
+																												</td></tr>`;
+										 console.log(newtr);
+										$(newtr).insertBefore(button.parent().parent().parent().next().children(":first"));
+
+										setTimeout(function(){modal.modal('hide')},1000);
+									}else{
+										categoryInfo.text("Có lỗi xảy ra. Thử lại");
+										categoryInfo.show();
+									}
+								});
+							}
 						}
 					});
+					//case edit
+				}else{
+					if(okSubmit){
+						//ajax submit here
+						$.post('/admin/category',{id: categoryID,name: inputName.val(), tag: inputTag.val()}, function(data){
+							alert("submit result:"+data);
+							if(data!=="err"){
+								categoryInfo.removeClass("alert-danger").addClass("alert-success");
+								categoryInfo.text("Cập nhật thành công !");
+								categoryInfo.show();
+								//json parser data
+								var resultCategory = JSON.parse(data);
+								//put back updated data to tr
+								//put id, name, tag
+								// alert("result: name:"+resultCategory.name+" tag:"+resultCategory.tag);
+								button.parent().prev().html(resultCategory.tag).prev().html(resultCategory.name);
+								setTimeout(function(){modal.modal('hide')},1000);
+							}else{
+								categoryInfo.text("Có lỗi xảy ra. Thử lại");
+								categoryInfo.show();
+							}
+						});
+
+					}	
 				}
+			}else if(recipient=="delete"){
+				$.ajax({
+					url: '/admin/category',
+					type: 'DELETE',
+					data: {id: categoryID},
+					success: function(result){
+						if(result=="ok"){
+							categoryInfo.removeClass("alert-danger").addClass("alert-success");
+							categoryInfo.text("Xóa thành công !");
+							categoryInfo.show();
+						    setTimeout(function(){modal.modal('hide')},1000);
+							//remove this tr 
+							button.parent().parent().remove();
+
+						}else{
+							categoryInfo.text("Có lỗi xảy ra. Thử lại");
+							categoryInfo.show();
+						}	
+					}
+				});
+				//delete by id	
+				//thong bao xoa thanh cong
+				//thoat dialog
 
 			}
+			event.preventDefault();
 		});
-		event.preventDefault();
-	});
+	});	
 });
 		</script>
 	</body>
