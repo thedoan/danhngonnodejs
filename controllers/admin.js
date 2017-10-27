@@ -1,4 +1,5 @@
 var Category = require("../models/Category");
+var Quote = require("../models/Quote");
 module.exports = {
 	index: function(req, res){
 		if(req.user && req.user.role == "admin"){
@@ -158,6 +159,56 @@ module.exports = {
 					}
 				}
 			});			
+	},
+	//all admin quote here
+	quote: function(req, res){
+		//skip n
+		//limit 20
+		Quote.find({}).sort({created_on: -1}).limit(20)
+			.exec(function(err, resultQuotes){
+				if(err){
+					res.status(500);
+					res.end("Lỗi hệ thống");
+				}else{
+					res.render("../views/admin/quote",{user: req.user,quotes:resultQuotes});
+				}				
+			});		
+	},
+	apiTotalQuotes: function(req, res){
+		let recordPerPage = 20;
+		Quote.count({}, function(err, numDocs){
+			if(err){
+				res.status(500);
+				res.json({status: "error"});
+			}else{
+				if(numDocs <= recordPerPage){
+					res.json({status: "ok", data:{total: 1}});
+				}else{
+					let totalPage;
+					if((numDocs%recordPerPage)!==0){
+						totalPage = Math.round(numDocs/recordPerPage)+1;
+					}else{
+						totalPage = Math.round(numDocs/recordPerPage);
+					}
+					res.json({status: "ok", data:{total: totalPage}});
+				}
+			}
+		});
+	},
+	apiQuoteByPage: function(req, res){
+		let recordPerPage = 20;
+		let page = req.params.page;
+		let skip = recordPerPage*(page-1);
+		console.log("page:"+page+", skip:"+skip);
+		Quote.find({}).sort({created_on: -1}).skip(skip).limit(recordPerPage)
+			.exec(function(err, resultQuotes){
+				if(err){
+					res.status(500);
+					res.json({status: "error"});
+				}else{
+					res.json({status: "ok", data:resultQuotes});	
+				}	
+			});
 	}
 
 }	

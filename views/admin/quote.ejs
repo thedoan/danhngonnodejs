@@ -1,0 +1,321 @@
+<!doctype html>
+<html>
+	<head>
+		<% include ../headerStuff %>
+	</head>
+	<body>
+		<% include ../pageHeader %>
+		<div class="container">
+
+			<div class="card">
+				<div class="card-header alert-info">
+					<h2><span class="fa fa-tags">&nbsp; </span>Danh sách danh ngôn</h2>
+				</div>
+				<div class="card-body">
+					<table class="table table-sm table-hover">
+						<thead class="thead-default">
+							<tr>
+								<th>ID</th>
+								<th>Content</th>
+								<th>Author</th>
+								<th>Action <a data-toggle="modal" data-action="new" data-target="quoteModal" href="#"><span class="fa text-success fa-plus color-success float-right mr-3"></span></a></th>
+							</tr>
+						</thead>
+						<tbody>
+						</tbody>
+					</table>  
+					<nav aria-label="Quote page navigation">
+						<ul class="pagination pagination-lg justify-content-center" id="pagination">
+						</ul>
+					</nav>
+				</div>
+			</div>
+			<div class="modal fade" id="quoteModal" tabindex="-1" role="dialog" aria-labelledby="addNewModalLabel" aria-hidden="true">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="addNewModalLabel"></h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						<div class="modal-body">
+							<form action="/admin/quote" id="quoteForm" method="POST">
+								<div class="form-group row">
+									<div class="col-md-3 col-sm-0"></div>
+									<div class="alert alert-danger col-md-6 col-sm-12" id="quoteInfo"></div>
+								</div>
+								<div class="form-group row">
+									<label class="col-md-3 col-sm-0" for="name">Nội dung:</label>
+									<input class="col-md-6 col-sm-12" type="text" name="content" required="" title="Hãy nhập nội dung" placeholder="Nhập nội dung" oninvalid="this.setCustomValidity('Nhập nội dung')" oninput="setCustomValidity('')" >
+								</div>
+									<div class="form-group row">
+										<label class="col-md-3 col-sm-0" for="tag">Tác giả:</label>
+										<input class="col-md-6 col-sm-12" type="text" name="author" required="" title="Hãy nhập tác giả" placeholder="Nhập tác giả" oninvalid="this.setCustomValidity('Nhập tác giả')" oninput="setCustomValidity('')">
+									</div>
+									<div class="form-group row">
+										<label class="col-md-3 col-sm-0" for="tag">Chủ đề:</label>
+										<input class="col-md-6 col-sm-12" type="text" name="author" required="" title="Hãy nhập tác giả" placeholder="Nhập tác giả" oninvalid="this.setCustomValidity('Nhập tác giả')" oninput="setCustomValidity('')">
+									</div>
+									<div class="form-group row">
+										<div class="col-md-3 col-sm-0"></div>
+										<div class="col-md-6 col-sm-12">
+											<button class = "btn btn-danger" type="button" data-dismiss="modal">Hủy</button>
+											<button class="btn ml-5 btn-success" type="submit"><span class="fa fa-tag"></span>&nbsp;Tạo</button>
+										</div>
+									</div>
+							</form>
+
+						</div>
+						<!--
+		  <div class="modal-footer">
+		  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+		  <button type="button" class="btn btn-primary">Save changes</button>
+		  </div>
+						-->
+					</div>
+				</div>
+			</div>
+		</div>
+		<% include ../pageFooter %>
+		<% include ../footerStuff %>
+		<script src="/javascripts/jquery.twbsPagination.js"></script>
+		<script>
+$(document).ready(function(){
+	//get total page
+	$.get('/api/admin/quote/total', function(result){
+		if(result.status!=="error"){
+			let totalPage = result.data.total;
+			console.log("totalPage:"+totalPage);
+			$('#pagination').twbsPagination({
+				totalPages: totalPage,
+				visiblePages: 6,
+				first: 'Trang đầu',
+				last: 'Trang cuối',
+				prev: '&laquo;',
+				next: '&raquo;',
+				onPageClick: function (event, page) {
+					//ajax get data and put to tbody
+					let url = '/api/admin/quote/'+page;
+					console.log("url:"+url);
+					$.get(url, function(result){
+						if(result.status!=="error"){
+							let quotes = result.data;
+							console.log(typeof quotes);
+							let tbodyData='';
+							quotes.forEach(function(quote){
+								let sTr =`<tr><th scope="row">${quote._id}</th>	
+									<td>${quote.content}</td>
+									<td>${quote.author}</td>
+									<td>
+									<a class="m-2" data-toggle="modal" data-action="edit" data-id="${quote._id}" data-content="${quote.content}" data-author="${quote.author}" data-target="quoteModal" href="#"><span class="fa fa-edit"></span>
+										</a>
+										<a data-toggle="modal" data-action="delete" data-id="${quote._id}" data-content="${quote.content}" data-author="${quote.author}" data-target="quoteModal" href="#"><span class="fa text-danger fa-trash-o"></span>
+										</a>
+										</td>
+										</tr>`;
+								tbodyData += sTr;
+							});
+							$('table tbody').html(tbodyData);
+						}
+					});
+					console.info(page);
+				}
+			});
+		}else{
+			console.log("error get total page");
+		}
+
+	});
+	/*
+	   var obj = $('#pagination').twbsPagination({
+	   totalPages: 20,
+	   visiblePages: 6,
+	   first: 'Trang đầu',
+	   last: 'Trang cuối',
+	   prev: '&laquo;',
+	   next: '&raquo;',
+	   onPageClick: function (event, page) {
+	   console.info(page);
+	   }
+	   });
+	   console.info(obj.data());
+	 */
+	$('quoteModal').on('show.bs.modal', function(event){
+		var button = $(event.relatedTarget);
+		var recipient = button.data('action');//new, edit, delete
+		var title='<span class="fa fa-tag"></span>&nbsp;';
+		//alert("action:"+recipient);
+		var modal = $(this);
+		var btnSubmit = modal.find('button[type=submit]'); 
+		var inputName = modal.find('input[name=name]');
+		var inputTag = modal.find('input[name=tag]');
+		var quoteID;
+		var quoteInfo = modal.find('div.alert');
+		var formModal = modal.find('form'); 
+
+		if(quoteInfo.hasClass("alert-success")){
+			quoteInfo.removeClass("alert-success");
+		}
+
+		if(!quoteInfo.hasClass("alert-danger")){
+			quoteInfo.addClass("alert-danger");
+		}
+
+		quoteInfo.text('');
+		quoteInfo.hide();
+		inputName.val('');
+		inputTag.val('');
+		inputName.prop('disabled', false);
+		inputTag.prop('disabled', false);
+		if(recipient=="new"){
+			title = title+"Thêm mới chủ đề";
+			btnSubmit.text("Thêm");
+		}else if(recipient=="edit"){
+			title = title+"Sửa chủ đề";
+			btnSubmit.text("Sửa");
+		}else if(recipient=="delete"){
+			title = title+"Xóa chủ đề ?";
+			btnSubmit.text("Xóa");
+			inputName.prop('disabled', true);
+			inputTag.prop('disabled', true);
+		}
+
+		if(recipient == "new" || recipient == "edit"){
+			inputName.blur(function(){
+				if($(this).val().length > 3){
+					let tag = KhongDau(inputName.val(),["chuyen","url"]);
+					inputTag.val(tag);
+				}
+			});
+		}
+
+		if(recipient=="edit" || recipient =="delete"){
+			inputName.val(button.data('name'));
+			inputTag.val(button.data('tag'));	
+			quoteID = button.data('id');
+			$('table tbody tr').removeClass("border").removeClass("border-warning");
+			//border tr you click
+			button.parent().parent().addClass("border-warning").addClass("border");
+
+		}
+
+		modal.find('.modal-title').html(title);
+		formModal.submit(function(event){
+			if(quoteInfo.hasClass("alert-success")){
+				quoteInfo.removeClass("alert-success");
+			}
+			if(!quoteInfo.hasClass("alert-danger")){
+				quoteInfo.addClass("alert-danger");
+			}
+
+			if(recipient=="new" || recipient=="edit"){
+				let okSubmit = true;
+				if(inputName.val().length <= 3){
+				   quoteInfo.text("Tên chủ đề phải > 3 ký tự");
+				   quoteInfo.show();
+				   okSubmit = false;
+				   }
+				   if(inputTag.val().lenth <= 3){
+				   quoteInfo.text("Tag phải > 3 ký tự");		
+				   quoteInfo.show();
+				   okSubmit = false;
+				   }
+				   if(recipient=="new"){
+				   $.get(encodeURI("/api/admin/checkquote/"+inputName.val()),function(data){
+				   //alert(data);
+				   console.log(data);	
+				   if(data.status =="exist"){
+				   //alert("Thông báo lỗi");
+				   quoteInfo.text("Đã có chủ đề này");
+				   quoteInfo.show();
+				   okSubmit = false;
+				   }else if(data.status == "error"){
+				   //co loi xay ra thu lai sau
+				   quoteInfo.text("Có lỗi xảy ra. Thử lại");
+				   quoteInfo.show();
+				   okSubmit = false;	
+				   }else if(data.status == "ok"){
+				   if(okSubmit){
+				   //ajax submit here
+				   $.post('/api/admin/quote',{name: inputName.val(), tag: inputTag.val()}, function(data){
+				   //alert("submit result:"+data);
+				   if(data.status!=="err"){
+				   quoteInfo.removeClass("alert-danger").addClass("alert-success");
+				   quoteInfo.text("Tạo thành công !");
+				   quoteInfo.show();
+				   let resultCategory = data.data;
+				   //console.log(resultCategory.name+" "+resultCategory.tag);
+				   //add to table
+				   let tbody = button.parent().parent().parent().next();
+				   let firstTr = tbody.children(":first");
+				   let newtr = `<tr class="border border-warning"><th>${resultCategory._id}</th><td>${resultCategory.name}</td><td>${resultCategory.tag}</td><td>											<a class="m-2" data-toggle="modal" data-action="edit" data-id="${resultCategory._id}" data-name="${resultCategory.name}" data-tag="${resultCategory.tag}" data-target="quoteModal" href="#"><span class="fa fa-edit"></span></a><a data-toggle="modal" data-action="delete" data-id="${resultCategory._id}" data-name="${resultCategory.name}" data-tag="${resultCategory.tag}" data-target="quoteModal" href="#"><span class="fa text-danger fa-trash-o"></span></a>
+					   </td></tr>`;
+				   //console.log(newtr);
+				   if(firstTr.length > 0){
+					   $(newtr).insertBefore(firstTr);
+				   }else{
+					   tbody.append(newtr);	
+				   }
+
+				   setTimeout(function(){modal.modal('hide')},1000);
+				   }else{
+					   quoteInfo.text("Có lỗi xảy ra. Thử lại");
+					   quoteInfo.show();
+				   }
+				   });
+				   }
+				   }
+				   });
+				   //case edit
+				   }else{
+					   if(okSubmit){
+						   //ajax submit here
+						   $.post('/api/admin/quote',{id: quoteID,name: inputName.val(), tag: inputTag.val()}, function(result){
+							   //alert("submit result:"+data);
+							   if(result.status !=="error"){
+								   quoteInfo.removeClass("alert-danger").addClass("alert-success");
+								   quoteInfo.text("Cập nhật thành công !");
+								   quoteInfo.show();
+								   var resultCategory = result.data;
+								   //put back updated data to tr
+								   //put id, name, tag
+								   // alert("result: name:"+resultCategory.name+" tag:"+resultCategory.tag);
+								   button.parent().prev().html(resultCategory.tag).prev().html(resultCategory.name);
+								   setTimeout(function(){modal.modal('hide')},1000);
+							   }else{
+								   quoteInfo.text("Có lỗi xảy ra. Thử lại");
+								   quoteInfo.show();
+							   }
+						   });
+
+					   }	
+				   }
+			}else if(recipient=="delete"){
+				$.ajax({
+					url: '/api/admin/quote',
+					type: 'DELETE',
+					data: {id: quoteID},
+					success: function(result){
+						if(result.status =="ok"){
+							quoteInfo.removeClass("alert-danger").addClass("alert-success");
+							quoteInfo.text("Xóa thành công !");
+							quoteInfo.show();
+							setTimeout(function(){modal.modal('hide')},1000);
+							//remove this tr 
+							button.parent().parent().remove();
+
+						}else{
+							quoteInfo.text("Có lỗi xảy ra. Thử lại");
+							quoteInfo.show();
+						}	
+					}
+				});
+			}
+			event.preventDefault();
+		});
+	});	
+});
+		</script>
+	</body>
+</html>

@@ -6,5 +6,8 @@ router.get("/user", adminController.user);
 router.get("/category", adminController.category);
 router.get("/checkcategory/:category", adminController.checkCategory);
 router.post("/category", adminController.createOrUpdateCategory);
+router.delete("/category", adminController.deleteCategory);
+router.get("/quote", adminController.quote);
+router.get("/quote/:page", adminController.apiQuoteByPage);
 module.exports = router;
 

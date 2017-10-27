@@ -7,5 +7,7 @@ router.get("/admin/category", adminController.apiCategory);
 router.get("/admin/checkcategory/:category", adminController.apiCheckCategory);
 router.post("/admin/category", adminController.apiCreateOrUpdateCategory);
 router.delete("/admin/category", adminController.apiDeleteCategory);
+router.get("/admin/quote/total", adminController.apiTotalQuotes);
+router.get("/admin/quote/:page", adminController.apiQuoteByPage);
 module.exports = router;
 
