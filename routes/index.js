@@ -4,6 +4,7 @@ var templateRouter = require('./templates');
 var bootstrap4Router = require('./bootstrap4');
 var proRouter = require('./pro');
 var adminRouter = require('./admin');
+var apiRouter = require('./api');
 var userRouter = require('./user');
 var userControl = require('../controllers/user');
 var Category = require("../models/Category");
@@ -124,6 +125,7 @@ module.exports = function(app, passport){
 
 	app.use('/user', userRouter);
 	app.use('/admin', adminRouter);
+	app.use('/api', apiRouter);
 	// =============================================================================
 	// AUTHORIZE (ALREADY LOGGED IN / CONNECTING OTHER SOCIAL ACCOUNT) =============
 	// =============================================================================

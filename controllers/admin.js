@@ -26,6 +26,19 @@ module.exports = {
 			});
 
 	},
+	apiCategory: function(req, res){
+		Category.find({}).sort({created_on: -1})
+			.exec(function(err, categories){
+				if(err){
+					//console.log(category);
+					res.status(500);
+					res.json({status: "err"});
+				}else{	
+					res.json({status: "ok", data:JSON.stringify(categories)});
+				}
+			});
+
+	},
 	createOrUpdateCategory: function(req, res){
 		let id = req.body.id;
 		let name = req.body.name;
@@ -56,6 +69,36 @@ module.exports = {
 			});
 		}
 	},
+	apiCreateOrUpdateCategory: function(req, res){
+		let id = req.body.id;
+		let name = req.body.name;
+		let tag = req.body.tag;
+		console.log("id: "+id+", name:"+name+", tag:"+tag);
+		if(!id){
+		let category = new Category({
+			name:name,
+			tag:tag
+		});
+		category.save(function(err, resultcategory){
+			if(err) {
+				res.json({status: "error"});
+				//console.log(err);
+			}else{
+				res.json({status: "ok", data: resultcategory});
+			}
+		});
+		}else{
+			Category.findOneAndUpdate({_id: id},{$set: {name: name, tag: tag}},{new: true},function(err, category){
+				if(err) {
+					res.json({status: "error"});
+					//console.log(err);
+				}else{
+					//console.log(category);
+					res.json({status: "ok",data: category});
+				}	
+			});
+		}
+	},
 	deleteCategory: function(req, res){
 		let id = req.body.id;
 		console.log("id:"+id);
@@ -65,6 +108,19 @@ module.exports = {
 				res.send("err");
 			}else{
 				res.send("ok");
+			}
+		});	
+	},
+	apiDeleteCategory: function(req, res){
+		let id = req.body.id;
+		console.log("id:"+id);
+		Category.remove({_id: id}, function(err){
+			if(err){
+				res.status(500);
+				console.log(err);
+				res.json({status: "error"});
+			}else{
+				res.json({status:"ok"});
 			}
 		});	
 	},
@@ -83,5 +139,25 @@ module.exports = {
 					}
 				}
 			});			
+	},
+	apiCheckCategory: function(req, res){
+		let category = req.params.category;
+		//console.log("check category:"+category);
+		Category.find({name: category})
+			.exec(function(err, resultCategory){
+				//console.log(typeof resultCategory);
+				if(err) {
+					res.status(500);
+					res.json({status: "error"});
+				}else{
+					//op this category exist
+					if(resultCategory.length > 0){
+						res.json({status: "exist"});
+					}else{
+						res.json({status: "ok"});
+					}
+				}
+			});			
 	}
+
 }	

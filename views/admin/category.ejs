@@ -126,16 +126,11 @@ $(document).ready(function(){
 		   categoryInfo.hide();
 		   });
 		 */
+		
 		if(recipient=="new"){
 			title = title+"Thêm mới chủ đề";
 			btnSubmit.text("Thêm");
-			inputName.blur(function(){
-				if($(this).val().length > 3){
-					let tag = KhongDau(inputName.val(),["chuyen","url"]);
-					inputTag.val(tag);
-				}
-			});
-
+			
 		}else if(recipient=="edit"){
 			title = title+"Sửa chủ đề";
 			btnSubmit.text("Sửa");
@@ -144,6 +139,15 @@ $(document).ready(function(){
 			btnSubmit.text("Xóa");
 			inputName.prop('disabled', true);
 			inputTag.prop('disabled', true);
+		}
+
+		if(recipient == "new" || recipient == "edit"){
+			inputName.blur(function(){
+				if($(this).val().length > 3){
+					let tag = KhongDau(inputName.val(),["chuyen","url"]);
+					inputTag.val(tag);
+				}
+			});
 		}
 
 		if(recipient=="edit" || recipient =="delete"){
@@ -155,6 +159,7 @@ $(document).ready(function(){
 			button.parent().parent().addClass("border-warning").addClass("border");
 
 		}
+
 		modal.find('.modal-title').html(title);
 		formModal.submit(function(event){
 			if(categoryInfo.hasClass("alert-success")){
@@ -177,28 +182,29 @@ $(document).ready(function(){
 					okSubmit = false;
 				}
 				if(recipient=="new"){
-					$.get(encodeURI("/admin/checkcategory/"+inputName.val()),function(data){
+					$.get(encodeURI("/api/admin/checkcategory/"+inputName.val()),function(data){
 						//alert(data);
-						if(data=="exist"){
+						console.log(data);	
+						if(data.status =="exist"){
 							//alert("Thông báo lỗi");
 							categoryInfo.text("Đã có chủ đề này");
 							categoryInfo.show();
 							okSubmit = false;
-						}else if(data == "error"){
+						}else if(data.status == "error"){
 							//co loi xay ra thu lai sau
 							categoryInfo.text("Có lỗi xảy ra. Thử lại");
 							categoryInfo.show();
 							okSubmit = false;	
-						}else if(data == "ok"){
+						}else if(data.status == "ok"){
 							if(okSubmit){
 								//ajax submit here
-								$.post('/admin/category',{name: inputName.val(), tag: inputTag.val()}, function(data){
+								$.post('/api/admin/category',{name: inputName.val(), tag: inputTag.val()}, function(data){
 									//alert("submit result:"+data);
-									if(data!=="err"){
+									if(data.status!=="err"){
 										categoryInfo.removeClass("alert-danger").addClass("alert-success");
 										categoryInfo.text("Tạo thành công !");
 										categoryInfo.show();
-										let resultCategory = JSON.parse(data);
+										let resultCategory = data.data;
 										//console.log(resultCategory.name+" "+resultCategory.tag);
 										//add to table
 										let tbody = button.parent().parent().parent().next();
@@ -221,18 +227,17 @@ $(document).ready(function(){
 							}
 						}
 					});
-					//case edit
+				//case edit
 				}else{
 					if(okSubmit){
 						//ajax submit here
-						$.post('/admin/category',{id: categoryID,name: inputName.val(), tag: inputTag.val()}, function(data){
+						$.post('/api/admin/category',{id: categoryID,name: inputName.val(), tag: inputTag.val()}, function(result){
 							//alert("submit result:"+data);
-							if(data!=="err"){
+							if(result.status !=="error"){
 								categoryInfo.removeClass("alert-danger").addClass("alert-success");
 								categoryInfo.text("Cập nhật thành công !");
 								categoryInfo.show();
-								//json parser data
-								var resultCategory = JSON.parse(data);
+								var resultCategory = result.data;
 								//put back updated data to tr
 								//put id, name, tag
 								// alert("result: name:"+resultCategory.name+" tag:"+resultCategory.tag);
@@ -248,11 +253,11 @@ $(document).ready(function(){
 				}
 			}else if(recipient=="delete"){
 				$.ajax({
-					url: '/admin/category',
+					url: '/api/admin/category',
 					type: 'DELETE',
 					data: {id: categoryID},
 					success: function(result){
-						if(result=="ok"){
+						if(result.status =="ok"){
 							categoryInfo.removeClass("alert-danger").addClass("alert-success");
 							categoryInfo.text("Xóa thành công !");
 							categoryInfo.show();
