@@ -90,11 +90,6 @@
 		<% include ../footerStuff %>
 		<script>
 $(document).ready(function(){
-	//process modal add new category
-	var inputName = $('#categoryForm :input[name="name"]'); 
-	var inputTag = $('#categoryForm :input[name="tag"]'); 
-	var categoryInfo = $('#categoryInfo');
-	categoryInfo.hide();
 	$('#categoryModal').on('show.bs.modal', function(event){
 		var button = $(event.relatedTarget);
 		var recipient = button.data('action');//new, edit, delete
@@ -107,30 +102,24 @@ $(document).ready(function(){
 		var categoryID;
 		var categoryInfo = modal.find('div.alert');
 		var formModal = modal.find('form'); 
-			if(categoryInfo.hasClass("alert-success")){
+
+		if(categoryInfo.hasClass("alert-success")){
 			categoryInfo.removeClass("alert-success");
 		}
+
 		if(!categoryInfo.hasClass("alert-danger")){
 			categoryInfo.addClass("alert-danger");
 		}
+
+		categoryInfo.text('');
 		categoryInfo.hide();
 		inputName.val('');
 		inputTag.val('');
 		inputName.prop('disabled', false);
 		inputTag.prop('disabled', false);
-		/*
-		   inputName.keyup(function(event){
-		   categoryInfo.hide();
-		   });
-		   inputTag.keyup(function(event){
-		   categoryInfo.hide();
-		   });
-		 */
-		
 		if(recipient=="new"){
 			title = title+"Thêm mới chủ đề";
 			btnSubmit.text("Thêm");
-			
 		}else if(recipient=="edit"){
 			title = title+"Sửa chủ đề";
 			btnSubmit.text("Sửa");
@@ -210,13 +199,13 @@ $(document).ready(function(){
 										let tbody = button.parent().parent().parent().next();
 										let firstTr = tbody.children(":first");
 										let newtr = `<tr class="border border-warning"><th>${resultCategory._id}</th><td>${resultCategory.name}</td><td>${resultCategory.tag}</td><td>											<a class="m-2" data-toggle="modal" data-action="edit" data-id="${resultCategory._id}" data-name="${resultCategory.name}" data-tag="${resultCategory.tag}" data-target="#categoryModal" href="#"><span class="fa fa-edit"></span></a><a data-toggle="modal" data-action="delete" data-id="${resultCategory._id}" data-name="${resultCategory.name}" data-tag="${resultCategory.tag}" data-target="#categoryModal" href="#"><span class="fa text-danger fa-trash-o"></span></a>
-																												</td></tr>`;
-										 //console.log(newtr);
-										 if(firstTr.length > 0){
+											</td></tr>`;
+										//console.log(newtr);
+										if(firstTr.length > 0){
 											$(newtr).insertBefore(firstTr);
-										 }else{
+										}else{
 											tbody.append(newtr);	
-										 }
+										}
 
 										setTimeout(function(){modal.modal('hide')},1000);
 									}else{
@@ -227,7 +216,7 @@ $(document).ready(function(){
 							}
 						}
 					});
-				//case edit
+					//case edit
 				}else{
 					if(okSubmit){
 						//ajax submit here
@@ -261,7 +250,7 @@ $(document).ready(function(){
 							categoryInfo.removeClass("alert-danger").addClass("alert-success");
 							categoryInfo.text("Xóa thành công !");
 							categoryInfo.show();
-						    setTimeout(function(){modal.modal('hide')},1000);
+							setTimeout(function(){modal.modal('hide')},1000);
 							//remove this tr 
 							button.parent().parent().remove();
 
@@ -271,10 +260,6 @@ $(document).ready(function(){
 						}	
 					}
 				});
-				//delete by id	
-				//thong bao xoa thanh cong
-				//thoat dialog
-
 			}
 			event.preventDefault();
 		});
