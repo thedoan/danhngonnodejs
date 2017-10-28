@@ -114,7 +114,7 @@ describe("Test Add Quote", function(){
 					arrCategory.push(arrCategories[faker.random.number({min:0,max:arrCategories.length-1})]._id);
 				}
 				arrCategory = _.uniq(arrCategory);
-				//console.log(arrCategory);
+				console.log(arrCategory);
 				let tagArrLength = faker.random.number({min:1, max: 4});
 				let arrTag = [];
 				for(let i = 0; i < tagArrLength; i++){

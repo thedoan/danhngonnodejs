@@ -6,19 +6,18 @@
 	<body>
 		<% include ../pageHeader %>
 		<div class="container">
-
 			<div class="card">
 				<div class="card-header alert-info">
 					<h2><span class="fa fa-tags">&nbsp; </span>Danh sách danh ngôn</h2>
 				</div>
-				<div class="card-body">
-					<table class="table table-sm table-hover">
+				<div class="card-block">
+					<table class="table .table-responsive table-sm table-hover">
 						<thead class="thead-default">
 							<tr>
 								<th>ID</th>
 								<th>Content</th>
 								<th>Author</th>
-								<th>Action <a data-toggle="modal" data-action="new" data-target="quoteModal" href="#"><span class="fa text-success fa-plus color-success float-right mr-3"></span></a></th>
+								<th>Action <a data-toggle="modal" data-action="new" data-target="#quoteModal" href="#"><span class="fa text-success fa-plus color-success float-right mr-3"></span></a></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -33,7 +32,7 @@
 			<div class="modal fade" id="quoteModal" tabindex="-1" role="dialog" aria-labelledby="addNewModalLabel" aria-hidden="true">
 				<div class="modal-dialog" role="document">
 					<div class="modal-content">
-						<div class="modal-header">
+						<div class="modal-header alert-info">
 							<h5 class="modal-title" id="addNewModalLabel"></h5>
 							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 								<span aria-hidden="true">&times;</span>
@@ -45,25 +44,46 @@
 									<div class="col-md-3 col-sm-0"></div>
 									<div class="alert alert-danger col-md-6 col-sm-12" id="quoteInfo"></div>
 								</div>
+								<input type="hidden" name="quoteID" value="">
 								<div class="form-group row">
-									<label class="col-md-3 col-sm-0" for="name">Nội dung:</label>
-									<input class="col-md-6 col-sm-12" type="text" name="content" required="" title="Hãy nhập nội dung" placeholder="Nhập nội dung" oninvalid="this.setCustomValidity('Nhập nội dung')" oninput="setCustomValidity('')" >
+									<label class="col-md-3 col-sm-12" for="content">Nội dung:</label>
+									<textarea class="col-md-8 col-sm-12" required title="Hãy nhập nội dung" placeholder="Nhập nội dung" oninvalid="this.setCustomValidity('Nhập nội dung')" oninput="setCustomValidity('')" name="content" cols="30" rows="5"></textarea>
+									<!-- <input type="text" name="content" required=""  > -->
 								</div>
-									<div class="form-group row">
-										<label class="col-md-3 col-sm-0" for="tag">Tác giả:</label>
-										<input class="col-md-6 col-sm-12" type="text" name="author" required="" title="Hãy nhập tác giả" placeholder="Nhập tác giả" oninvalid="this.setCustomValidity('Nhập tác giả')" oninput="setCustomValidity('')">
-									</div>
-									<div class="form-group row">
-										<label class="col-md-3 col-sm-0" for="tag">Chủ đề:</label>
-										<input class="col-md-6 col-sm-12" type="text" name="author" required="" title="Hãy nhập tác giả" placeholder="Nhập tác giả" oninvalid="this.setCustomValidity('Nhập tác giả')" oninput="setCustomValidity('')">
-									</div>
-									<div class="form-group row">
-										<div class="col-md-3 col-sm-0"></div>
-										<div class="col-md-6 col-sm-12">
-											<button class = "btn btn-danger" type="button" data-dismiss="modal">Hủy</button>
-											<button class="btn ml-5 btn-success" type="submit"><span class="fa fa-tag"></span>&nbsp;Tạo</button>
+								<div class="form-group row">
+									<label class="col-md-3 col-sm-12" for="author">Tác giả:</label>
+									<input class="col-md-8 col-sm-12" type="text" name="author" required="" title="Hãy nhập tác giả" placeholder="Nhập tác giả" oninvalid="this.setCustomValidity('Nhập tác giả')" oninput="setCustomValidity('')">
+								</div>
+								<div class="form-group row" id="quoteCategories">
+									<label class="col-md-3 col-sm-12" for="categories">Chủ đề:</label>
+									<select class="col-md-3 col-sm-5" multiple name="listCategories">
+										<% if(cats) {
+											cats.forEach(function(cat){
+											%>
+											<option value="<%= cat._id %>"><%= cat.name %></option>
+											<%			
+											});
+										}
+										%>
+									</select>
+									<div class="col-md-2 col-sm-2">
+										<div>
+											<a class="btn" id="addCategories" href="#"><span class="h3 text-primary">&#8250;</span></a>
+										</div>
+										<div>
+											<a class="btn" id="removeCategories" href="#"><span class="h3 text-primary">&#8249;</span></a>
 										</div>
 									</div>
+									<select class="col-md-3 col-sm-5" multiple name="listSelectedCategories">
+									</select>
+								</div>
+								<div class="form-group row">
+									<div class="col-md-3 col-sm-0"></div>
+									<div class="col-md-6 col-sm-12">
+										<button class = "btn btn-danger" type="button" data-dismiss="modal">Hủy</button>
+										<button class="btn ml-5 btn-success" type="submit"><span class="fa fa-tag"></span>&nbsp;Tạo</button>
+									</div>
+								</div>
 							</form>
 
 						</div>
@@ -90,34 +110,36 @@ $(document).ready(function(){
 			$('#pagination').twbsPagination({
 				totalPages: totalPage,
 				visiblePages: 6,
-				first: 'Trang đầu',
-				last: 'Trang cuối',
+				first: 'Đầu',
+				last: 'Cuối',
 				prev: '&laquo;',
 				next: '&raquo;',
 				onPageClick: function (event, page) {
 					//ajax get data and put to tbody
-					$.get('/api/admin/quote/'+page, function(result){
+					let url = '/api/admin/quote/'+page;
+					console.log("url:"+url);
+					$.get(url, function(result){
 						if(result.status!=="error"){
 							let quotes = result.data;
-							console.log(typeof quotes);
+							//console.log(typeof quotes);
 							let tbodyData='';
 							quotes.forEach(function(quote){
-								let sTr =`<tr><th scope="row">${quote._id}</th>	
+								let sTr =`<tr><th>${quote._id}</th>	
 									<td>${quote.content}</td>
 									<td>${quote.author}</td>
 									<td>
-									<a class="m-2" data-toggle="modal" data-action="edit" data-id="${quote._id}" data-content="${quote.content}" data-author="${quote.author}" data-target="quoteModal" href="#"><span class="fa fa-edit"></span>
-										</a>
-										<a data-toggle="modal" data-action="delete" data-id="${quote._id}" data-content="${quote.content}" data-author="${quote.author}" data-target="quoteModal" href="#"><span class="fa text-danger fa-trash-o"></span>
-										</a>
-										</td>
-										</tr>`;
+									<a class="m-2" data-toggle="modal" data-action="edit" data-target="#quoteModal" data-categories="${encodeURI(JSON.stringify(quote.categories))}" href="#"><span class="fa fa-edit"></span>
+									</a>
+									<a data-toggle="modal" data-action="delete"  data-target="#quoteModal" data-categories="${encodeURI(JSON.stringify(quote.categories))}" href="#"><span class="fa text-danger fa-trash-o"></span>
+									</a>
+									</td>
+									</tr>`;
 								tbodyData += sTr;
 							});
 							$('table tbody').html(tbodyData);
 						}
 					});
-					console.info(page);
+					//console.info(page);
 				}
 			});
 		}else{
@@ -125,33 +147,28 @@ $(document).ready(function(){
 		}
 
 	});
-	/*
-	   var obj = $('#pagination').twbsPagination({
-	   totalPages: 20,
-	   visiblePages: 6,
-	   first: 'Trang đầu',
-	   last: 'Trang cuối',
-	   prev: '&laquo;',
-	   next: '&raquo;',
-	   onPageClick: function (event, page) {
-	   console.info(page);
-	   }
-	   });
-	   console.info(obj.data());
-	 */
-	$('quoteModal').on('show.bs.modal', function(event){
+
+	$('#quoteModal').on('show.bs.modal', function(event){
 		var button = $(event.relatedTarget);
 		var recipient = button.data('action');//new, edit, delete
 		var title='<span class="fa fa-tag"></span>&nbsp;';
 		//alert("action:"+recipient);
 		var modal = $(this);
+		var thisTR = button.parent().parent();
+		var thisTDID =thisTR.children(':first');
+		var thisTDContent = thisTR.children(':first').next();
+		var thisTDAuthor = thisTR.children(':last').prev();
 		var btnSubmit = modal.find('button[type=submit]'); 
-		var inputName = modal.find('input[name=name]');
-		var inputTag = modal.find('input[name=tag]');
-		var quoteID;
+		var inputID = modal.find('input[name=quoteID]');
+		var inputContent = modal.find('textarea[name=content]');
+		var inputAuthor = modal.find('input[name=author]');
+		var inputlistCategories = modal.find('select[name=listCategories]');
+		var inputCategories = modal.find('select[name=listSelectedCategories]');
 		var quoteInfo = modal.find('div.alert');
 		var formModal = modal.find('form'); 
-
+		var htmlCategoryNew;
+		var objListCategories;
+		
 		if(quoteInfo.hasClass("alert-success")){
 			quoteInfo.removeClass("alert-success");
 		}
@@ -159,47 +176,120 @@ $(document).ready(function(){
 		if(!quoteInfo.hasClass("alert-danger")){
 			quoteInfo.addClass("alert-danger");
 		}
-
+		inputCategories.val(''); 
 		quoteInfo.text('');
 		quoteInfo.hide();
-		inputName.val('');
-		inputTag.val('');
-		inputName.prop('disabled', false);
-		inputTag.prop('disabled', false);
+		inputContent.val('');
+		inputAuthor.val('');
+		inputContent.prop('disabled', false);
+		inputAuthor.prop('disabled', false);
+		inputCategories.prop('disabled', false);
+		inputlistCategories.prop('disabled', false);
 		if(recipient=="new"){
-			title = title+"Thêm mới chủ đề";
-			btnSubmit.text("Thêm");
-		}else if(recipient=="edit"){
-			title = title+"Sửa chủ đề";
-			btnSubmit.text("Sửa");
-		}else if(recipient=="delete"){
-			title = title+"Xóa chủ đề ?";
-			btnSubmit.text("Xóa");
-			inputName.prop('disabled', true);
-			inputTag.prop('disabled', true);
-		}
+			title = title+"Thêm mới danh ngôn";
+			btnSubmit.html('<span class="fa fa-tag"></span>&nbsp;Thêm');
+			htmlCategoryNew =`<label class="col-md-3 col-sm-12" for="tag">Chủ đề:</label>
+									<select class="col-md-3 col-sm-5" multiple name="listCategories">`;
+			//console.log(htmlCategoryNew);
+			//get list category put to case new
+			$.get('/api/admin/category', function(result){
+				if(result.status !=="error"){
+					objListCategories = result.data;
+					//lap danh sach dua vao list 
+					//console.log(typeof objListCategories);
+					objListCategories.forEach(function(category){
+						htmlCategoryNew += `<option value="${category._id}">${category.name}</option>`;
+					});
+					
+				}else{
+					htmlCategoryNew += `<option>Lỗi lấy chủ đề</option>`;
+				}	
+				htmlCategoryNew += `
+									</select>
+									<div class="col-md-2 col-sm-2">
+										<div>
+											<a class="btn" id="addCategories" href="#"><span class="h3 text-primary">&#8250;</span></a>
+										</div>
+										<div>
+											<a class="btn" id="removeCategories" href="#"><span class="h3 text-primary">&#8249;</span></a>
+										</div>
 
-		if(recipient == "new" || recipient == "edit"){
-			inputName.blur(function(){
-				if($(this).val().length > 3){
-					let tag = KhongDau(inputName.val(),["chuyen","url"]);
-					inputTag.val(tag);
-				}
+									</div>
+
+									<select class="col-md-3 col-sm-5" multiple name="listSelectedCategories">
+									</select>
+`;
+				//console.log(htmlCategoryNew);
+					modal.find('#quoteCategories').html(htmlCategoryNew);
+					var btnAddCategories = modal.find('#addCategories');
+					var btnRemoveCategories = modal.find('#removeCategories');
+					btnAddCategories.click(function(event){
+						//alert('You click me');
+						modal.find('select[name=listCategories] :selected').each(function(i1,sel1){
+							//console.log("key:"+i1+" value:"+sel1);
+							//console.log("option: value:"+$(sel1).val()+" text:"+$(sel1).text());
+							
+							let isExist = false;
+							modal.find('select[name=listSelectedCategories]').each(function(i2,sel2){
+								//break if match
+								if($(sel1).val() == $(sel2).val()) {
+									isExist = true;
+									return false;	
+								}
+							});
+							if(!isExist){
+								modal.find('select[name=listSelectedCategories]').append($('<option>',{value:$(sel1).val(),text: $(sel1).text()}));
+							}
+							
+						});
+						/*
+						console.log(modal.find('select[name=listCategories]').val());	
+						console.log(modal.find('select[name=listCategories]').text());	
+						*/
+						event.preventDefault();
+					});
+					btnRemoveCategories.click(function(event){
+						//alert('You click me');
+						//console.log(modal.find('select[name=listSelectedCategories]').val());	
+						modal.find('select[name=listSelectedCategories] :selected').remove();
+						event.preventDefault();
+					});
 			});
+		}else if(recipient=="edit"){
+			title = title+"Sửa danh ngôn";
+			btnSubmit.html('<span class="fa fa-tag"></span>&nbsp;Sửa');
+		}else if(recipient=="delete"){
+			title = title+"Xóa danh ngôn?";
+			btnSubmit.html('<span class="fa fa-tag"></span>&nbsp;Xóa');
+			inputContent.prop('disabled', true);
+			inputAuthor.prop('disabled', true);
+			inputCategories.prop('disabled', true);
+			inputlistCategories.prop('disabled', true);
 		}
 
 		if(recipient=="edit" || recipient =="delete"){
-			inputName.val(button.data('name'));
-			inputTag.val(button.data('tag'));	
-			quoteID = button.data('id');
+			//put infomation to form
+			//_id, content, author, categories
+			inputID.val(thisTDID.text());	
+			inputContent.val(thisTDContent.text());
+			inputAuthor.val(thisTDAuthor.text());	
+			let thisDataCategories = button.data('categories');
+			//console.log(thisDataCategories);
+			let oCategories = JSON.parse(decodeURI(thisDataCategories));
+			//console.log(typeof oCategories);
+			oCategories.forEach(function(cat){
+				inputCategories.append($('<option>',{value:cat._id, text: cat.name}));
+			});
+			//remove selected border previous set
 			$('table tbody tr').removeClass("border").removeClass("border-warning");
 			//border tr you click
 			button.parent().parent().addClass("border-warning").addClass("border");
-
 		}
 
 		modal.find('.modal-title').html(title);
 		formModal.submit(function(event){
+			event.preventDefault();
+			alert("ok submit form");
 			if(quoteInfo.hasClass("alert-success")){
 				quoteInfo.removeClass("alert-success");
 			}
@@ -209,91 +299,76 @@ $(document).ready(function(){
 
 			if(recipient=="new" || recipient=="edit"){
 				let okSubmit = true;
-				if(inputName.val().length <= 3){
-				   quoteInfo.text("Tên chủ đề phải > 3 ký tự");
-				   quoteInfo.show();
-				   okSubmit = false;
-				   }
-				   if(inputTag.val().lenth <= 3){
-				   quoteInfo.text("Tag phải > 3 ký tự");		
-				   quoteInfo.show();
-				   okSubmit = false;
-				   }
-				   if(recipient=="new"){
-				   $.get(encodeURI("/api/admin/checkquote/"+inputName.val()),function(data){
-				   //alert(data);
-				   console.log(data);	
-				   if(data.status =="exist"){
-				   //alert("Thông báo lỗi");
-				   quoteInfo.text("Đã có chủ đề này");
-				   quoteInfo.show();
-				   okSubmit = false;
-				   }else if(data.status == "error"){
-				   //co loi xay ra thu lai sau
-				   quoteInfo.text("Có lỗi xảy ra. Thử lại");
-				   quoteInfo.show();
-				   okSubmit = false;	
-				   }else if(data.status == "ok"){
-				   if(okSubmit){
-				   //ajax submit here
-				   $.post('/api/admin/quote',{name: inputName.val(), tag: inputTag.val()}, function(data){
-				   //alert("submit result:"+data);
-				   if(data.status!=="err"){
-				   quoteInfo.removeClass("alert-danger").addClass("alert-success");
-				   quoteInfo.text("Tạo thành công !");
-				   quoteInfo.show();
-				   let resultCategory = data.data;
-				   //console.log(resultCategory.name+" "+resultCategory.tag);
-				   //add to table
-				   let tbody = button.parent().parent().parent().next();
-				   let firstTr = tbody.children(":first");
-				   let newtr = `<tr class="border border-warning"><th>${resultCategory._id}</th><td>${resultCategory.name}</td><td>${resultCategory.tag}</td><td>											<a class="m-2" data-toggle="modal" data-action="edit" data-id="${resultCategory._id}" data-name="${resultCategory.name}" data-tag="${resultCategory.tag}" data-target="quoteModal" href="#"><span class="fa fa-edit"></span></a><a data-toggle="modal" data-action="delete" data-id="${resultCategory._id}" data-name="${resultCategory.name}" data-tag="${resultCategory.tag}" data-target="quoteModal" href="#"><span class="fa text-danger fa-trash-o"></span></a>
-					   </td></tr>`;
-				   //console.log(newtr);
-				   if(firstTr.length > 0){
-					   $(newtr).insertBefore(firstTr);
-				   }else{
-					   tbody.append(newtr);	
-				   }
+				if(inputContent.val().length <= 8){
+					 quoteInfo.text("Nội dung phải > 8 ký tự");
+					 quoteInfo.show();
+					 okSubmit = false;
+				}
+			    if(inputAuthor.val().lenth <= 3){
+						 quoteInfo.text("Tác giả  phải > 3 ký tự");		
+						 quoteInfo.show();
+						 okSubmit = false;
+				 }
+				 if(recipient=="new"){
+					if(okSubmit){
+						 alert("match for submit");
+						 console.log(modal.find('select[name=listSelectedCategories]').val());
+						 //ajax submit here
+						 $.post('/api/admin/quote',{content: inputContent.val(), author: inputAuthor.val(), categories:JSON.stringify(modal.find('select[name=listSelectedCategories]').val())}, function(data){
+						 //alert("submit result:"+data);
+						 if(data.status!=="err"){
+						 quoteInfo.removeClass("alert-danger").addClass("alert-success");
+						 quoteInfo.text("Tạo thành công !");
+						 quoteInfo.show();
+						 let resultQuote = data.data;
+						 //console.log(resultQuote.content+" "+resultQuote.author+" "+resultQuote.categories);
+						 //add to table
+						 let tbody = button.parent().parent().parent().next();
+						 let firstTr = tbody.children(":first");
+						 let newtr = `<tr class="border border-warning"><th>${resultQuote._id}</th><td>${resultQuote.content}</td><td>${resultQuote.author}</td><td>											<a class="m-2" data-toggle="modal" data-action="edit" data-id="${resultQuote._id}" data-content="${resultQuote.content}" data-author="${resultQuote.author}" data-categories="${resultQuote.categories}" data-target="quoteModal" href="#"><span class="fa fa-edit"></span></a><a data-toggle="modal" data-action="delete" data-id="${resultQuote._id}" data-content="${resultQuote.content}" data-author="${resultQuote.author}" data-categories="${resultQuote.categories}" data-target="quoteModal" href="#"><span class="fa text-danger fa-trash-o"></span></a>
+							 </td></tr>`;
+						 //console.log(newtr);
+						 if(firstTr.length > 0){
+							 $(newtr).insertBefore(firstTr);
+						 }else{
+							 tbody.append(newtr);	
+						 }
+						 setTimeout(function(){modal.modal('hide')},1000);
+						 }else{
+							 quoteInfo.text("Có lỗi xảy ra. Thử lại");
+							 quoteInfo.show();
+						 }
+						 });
+						 }
+						 //case edit
+						 }else{
+							 if(okSubmit){
+								 //ajax submit here
+								 $.post('/api/admin/quote',{id: inputID.val(),name: inputContent.val(), tag: inputAuthor.val()}, function(result){
+									 //alert("submit result:"+data);
+									 if(result.status !=="error"){
+										 quoteInfo.removeClass("alert-danger").addClass("alert-success");
+										 quoteInfo.text("Cập nhật thành công !");
+										 quoteInfo.show();
+										 var resultQuote = result.data;
+										 //put back updated data to tr
+										 //put id, name, tag
+										 // alert("result: name:"+resultQuote.name+" tag:"+resultQuote.tag);
+										 button.parent().prev().html(resultQuote.tag).prev().html(resultQuote.name);
+										 setTimeout(function(){modal.modal('hide')},1000);
+									 }else{
+										 quoteInfo.text("Có lỗi xảy ra. Thử lại");
+										 quoteInfo.show();
+									 }
+								 });
 
-				   setTimeout(function(){modal.modal('hide')},1000);
-				   }else{
-					   quoteInfo.text("Có lỗi xảy ra. Thử lại");
-					   quoteInfo.show();
-				   }
-				   });
-				   }
-				   }
-				   });
-				   //case edit
-				   }else{
-					   if(okSubmit){
-						   //ajax submit here
-						   $.post('/api/admin/quote',{id: quoteID,name: inputName.val(), tag: inputTag.val()}, function(result){
-							   //alert("submit result:"+data);
-							   if(result.status !=="error"){
-								   quoteInfo.removeClass("alert-danger").addClass("alert-success");
-								   quoteInfo.text("Cập nhật thành công !");
-								   quoteInfo.show();
-								   var resultCategory = result.data;
-								   //put back updated data to tr
-								   //put id, name, tag
-								   // alert("result: name:"+resultCategory.name+" tag:"+resultCategory.tag);
-								   button.parent().prev().html(resultCategory.tag).prev().html(resultCategory.name);
-								   setTimeout(function(){modal.modal('hide')},1000);
-							   }else{
-								   quoteInfo.text("Có lỗi xảy ra. Thử lại");
-								   quoteInfo.show();
-							   }
-						   });
-
-					   }	
-				   }
+							 }	
+						 }
 			}else if(recipient=="delete"){
 				$.ajax({
 					url: '/api/admin/quote',
 					type: 'DELETE',
-					data: {id: quoteID},
+					data: {id: inputID.val()},
 					success: function(result){
 						if(result.status =="ok"){
 							quoteInfo.removeClass("alert-danger").addClass("alert-success");
@@ -310,7 +385,6 @@ $(document).ready(function(){
 					}
 				});
 			}
-			event.preventDefault();
 		});
 	});	
 });

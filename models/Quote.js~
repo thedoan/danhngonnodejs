@@ -5,7 +5,7 @@ var quoteSchema = Schema({
 	content: String,
 	author: String,
 	created_by:{ type: Schema.Types.ObjectId, ref: 'User' },
-	categories:[{type: Schema.Types.ObjectId, ref: 'Category'}],
+	categories:[type: Schema.Types.ObjectId, ref: 'Category'],
 	tags: [String],
 	liked_user: [{ type: Schema.Types.ObjectId, ref: 'User' }],
 	saved_user: [{ type: Schema.Types.ObjectId, ref: 'User' }],

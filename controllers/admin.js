@@ -35,7 +35,7 @@ module.exports = {
 					res.status(500);
 					res.json({status: "err"});
 				}else{	
-					res.json({status: "ok", data:JSON.stringify(categories)});
+					res.json({status: "ok", data:categories});
 				}
 			});
 
@@ -100,6 +100,41 @@ module.exports = {
 			});
 		}
 	},
+	apiCreateOrUpdateQuote: function(req, res){
+		let id = req.body.id;
+		let content = req.body.content;
+		let author = req.body.author;
+		let categories = req.body.categories;
+		let created_by = req.user._id;
+		console.log("id: "+id+", content:"+content+", author:"+author+", categories:"+categories);
+		if(!id){
+		let quote= new Quote({
+			content:content,
+			author:author,
+			categories: categories,
+			created_by: created_by
+		});
+		quote.save(function(err, resultQuote){
+			if(err) {
+				res.json({status: "error"});
+				//console.log(err);
+			}else{
+				res.json({status: "ok", data: resultQuote});
+			}
+		});
+		}else{
+			Quote.findOneAndUpdate({_id: id},{$set: {content: content, author: author,categories: categories}},{new: true},function(err, quote){
+				if(err) {
+					res.json({status: "error"});
+					//console.log(err);
+				}else{
+					//console.log(category);
+					res.json({status: "ok",data:quote});
+				}	
+			});
+		}
+	},
+
 	deleteCategory: function(req, res){
 		let id = req.body.id;
 		console.log("id:"+id);
@@ -201,6 +236,7 @@ module.exports = {
 		let skip = recordPerPage*(page-1);
 		console.log("page:"+page+", skip:"+skip);
 		Quote.find({}).sort({created_on: -1}).skip(skip).limit(recordPerPage)
+			.populate('categories', '_id name')
 			.exec(function(err, resultQuotes){
 				if(err){
 					res.status(500);

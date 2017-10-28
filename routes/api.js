@@ -9,5 +9,6 @@ router.post("/admin/category", adminController.apiCreateOrUpdateCategory);
 router.delete("/admin/category", adminController.apiDeleteCategory);
 router.get("/admin/quote/total", adminController.apiTotalQuotes);
 router.get("/admin/quote/:page", adminController.apiQuoteByPage);
+router.post("/admin/quote", adminController.apiCreateOrUpdateQuote);
 module.exports = router;
 
